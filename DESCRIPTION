@@ -1,0 +1,28 @@
+Package: Niangao
+Type: Package
+Title: Process and Clean AB1 Sequencing Files
+Version: 0.1.0
+Authors@R: c(
+    person(
+      "Wenhao", "Zhou",
+      email = "zhouwenhao@westlake.edu.cn",
+      role = c("aut", "cre")
+    ),
+    person(
+      "Xinyu", "Wang",
+      email = "wangxinyu30@westlake.edu.cn",
+      role = c("aut")
+    )
+  )
+Description: This package provides functions to process and clean AB1 sequencing files. It performs quality trimming,
+  generates a summary table, and outputs FASTA-formatted sequences, making it suitable for initial processing
+  of Sanger sequencing data.
+License: MIT
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+Depends: R (>= 3.5.0)
+Imports:
+    sangerseqR,
+    RcppRoll
+RoxygenNote: 7.3.2
