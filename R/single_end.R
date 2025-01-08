@@ -188,15 +188,17 @@ single_end <- function(file_path) {
     fasta_all <- gsub(" ", "", fasta_all)
 
     # 返回结果
-    invisible(list(
+    results <- list(
       result_table = result_clean,
       fasta_all = fasta_all,
       seq_clean_single_list = seq_clean_single_list
-    ))
+    )
 
     print("All files were successfully processed!")
+    return(results)
 
   } else {
     message("No .ab1 files found in the specified folder: ", file_path)
+    return(NULL)
   }
 }
