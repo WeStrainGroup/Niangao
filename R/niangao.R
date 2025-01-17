@@ -81,14 +81,22 @@ niangao <- function(file_path) {
                           include.dirs = FALSE
   )
 
+
+
   # 取ab1
   ab1_files <- file_list[endsWith(file_list, ".ab1")]
+  ab1_count <- length(ab1_files)
+  process_count <- 0
 
   # 循环开始
   if (length(ab1_files) > 0){
+    print(paste("Number of ab1 files to process", ab1_count))
+
     for (ab1_file in ab1_files) {
 
-      print(paste("Trying file:", ab1_file)) # 调试
+      process_count <- process_count + 1
+
+      print(paste("Trying file:", process_count, ab1_file)) # 调试
 
       ab1_name <- tools::file_path_sans_ext(basename(ab1_file))
 
