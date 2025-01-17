@@ -1,23 +1,34 @@
 #' Process single-end AB1 files for sequence cleaning.
 #'
-#' This function takes a directory containing AB1 files, processes them, cleans
-#' the sequences based on quality scores, and provides a summary table and a
-#' concatenated FASTA output, as well as a list of individual FASTA sequences.
+#' This function processes AB1 files from a specified directory, cleans the sequences
+#' based on quality scores using a sliding window algorithm, and returns a summary
+#' table alongside a `DNAStringSet` object containing all cleaned sequences.
 #'
 #' @param file_path A character string specifying the path to the directory
 #'   containing the AB1 files.
 #'
 #' @return A list containing:
 #'   \itemize{
-#'     \item{\code{result_table}}{A data frame summarizing the processing results
-#'       for each file, including raw and cleaned sequence lengths, average quality
-#'       scores, and deleted base counts.}
-#'     \item{\code{fasta_all}}{A character string containing all cleaned sequences
-#'       concatenated in FASTA format.}
-#'     \item{\code{seq_clean_single_list}}{A list where each element is a cleaned sequence in FASTA format for each corresponding file.}
+#'     \item{\code{result_table}}{A data frame summarizing the processing results for
+#'       each file, including raw and cleaned sequence lengths, average quality scores,
+#'       and counts of deleted bases during cleaning.}
+#'     \item{\code{dna_string_set}}{A `DNAStringSet` object containing all cleaned
+#'       sequences, where each sequence corresponds to a file processed.}
 #'   }
 #'
+#' @details
+#' The cleaning process involves:
+#' \itemize{
+#'   \item Calculating quality scores using a sliding window algorithm to filter out
+#'         low-quality regions.
+#'   \item Identifying and retaining the longest high-quality continuous segment.
+#'   \item Removing bases with quality scores below a specified threshold (default: 30).
+#' }
+#'
+#' Files without valid sequences after cleaning are excluded from the `DNAStringSet` object.
+#'
 #' @import sangerseqR
+#' @import Biostrings
 #' @import RcppRoll
 #'
 #' @export
@@ -26,22 +37,21 @@
 #' \dontrun{
 #' # Example usage:
 #' file_path <- "path/to/your/ab1/files"
-#' results <- single_end(file_path)
+#' results <- niangao(file_path)
 #'
 #' # Access results:
-#' print(results$result_table)
-#' cat(results$fasta_all)
-#' print(results$seq_clean_single_list)
+#' print(results$result_table)  # View the summary table
+#' print(results$dna_string_set)  # View the DNAStringSet object
 #' }
-single_end <- function(file_path) {
+
+niangao <- function(file_path) {
 
   if (!dir.exists(file_path)) {
     stop("Error: The specified file path does not exist: ", file_path)
   }
 
   # 定义一些变量和文件放置的容器
-  fasta_all <- character()
-  ab1_name <- character()
+  dnastring_list <- list()
   result_clean <- data.frame(file_name = character(),
                              length_raw = numeric(),
                              length_clean = numeric(),
@@ -52,7 +62,6 @@ single_end <- function(file_path) {
                              deleted_count1 = numeric(),
                              deleted_count2 = numeric(),
                              deleted_count3 = numeric())
-  seq_clean_single_list <- list()
 
   # 每次运行前把文件夹清空一下
   tempDir <- tempdir()
@@ -81,7 +90,7 @@ single_end <- function(file_path) {
 
       print(paste("Trying file:", ab1_file)) # 调试
 
-      ab1_name <- tools::file_path_sans_ext(basename(ab1_file)) # 注意这里只取名字没有后缀
+      ab1_name <- tools::file_path_sans_ext(basename(ab1_file))
 
       # 读取ab1文件中的碱基和质量信息
       abif_data <- sangerseqR::read.abif(ab1_file)
@@ -160,6 +169,9 @@ single_end <- function(file_path) {
         threshold <- 30
         paired_data_clean3 <- paired_data_clean2[paired_data_clean2$quality_value >= threshold, ]
         deleted_count3 <- nrow(paired_data_clean2) - nrow(paired_data_clean3)
+
+        # 保存清洗后的序列
+        dnastring_list[[ab1_name]] <- DNAString(paste0(paired_data_clean3$base_call, collapse = ""))
       }
 
       # 生成结果表格和对应的fasta文件
@@ -175,23 +187,14 @@ single_end <- function(file_path) {
                                deleted_count3 = deleted_count3)
       result_clean <- rbind(result_clean, result_row)
 
-      fasta_single <- c(">", ab1_name, "\n", paste0(paired_data_clean3$base_call, collapse = ""))
-
-      fasta_all <- c(fasta_all, fasta_single, "\n")
-
-      seq_clean_single_list[[ab1_name]] <- fasta_single
-
+      # 创建 DNAStringSet 对象
+      dnastring_set <- DNAStringSet(dnastring_list)
     }
-
-    # 创建输出
-    fasta_all <- paste(fasta_all, collapse = " ")
-    fasta_all <- gsub(" ", "", fasta_all)
 
     # 返回结果
     results <- list(
       result_table = result_clean,
-      fasta_all = fasta_all,
-      seq_clean_single_list = seq_clean_single_list
+      dna_string_set = dnastring_set
     )
 
     print("All files were successfully processed!")
