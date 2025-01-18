@@ -23,6 +23,7 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 Depends: R (>= 3.5.0)
 Imports:
+    BiocManager,
     sangerseqR,
     Biostrings,
     RcppRoll
