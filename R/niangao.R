@@ -179,7 +179,7 @@ niangao <- function(file_path) {
         deleted_count3 <- nrow(paired_data_clean2) - nrow(paired_data_clean3)
 
         # 保存清洗后的序列
-        dnastring_list[[ab1_name]] <- DNAString(paste0(paired_data_clean3$base_call, collapse = ""))
+        dnastring_list[[ab1_name]] <- Biostrings::DNAString(paste0(paired_data_clean3$base_call, collapse = ""))
       }
 
       # 生成结果表格和对应的fasta文件
@@ -196,13 +196,13 @@ niangao <- function(file_path) {
       result_clean <- rbind(result_clean, result_row)
 
       # 创建 DNAStringSet 对象
-      dnastring_set <- DNAStringSet(dnastring_list)
+      dnastring_set <- Biostrings::DNAStringSet(dnastring_list)
     }
 
     # 返回结果
     results <- list(
       result_table = result_clean,
-      dna_string_set = dnastring_set
+      clean_seq = dnastring_set
     )
 
     print("All files were successfully processed!")
