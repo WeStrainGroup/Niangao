@@ -22,4 +22,5 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 Depends: R (>= 3.5.0), sangerseqR, RcppRoll
+biocViews: Sequencing
 RoxygenNote: 7.3.2
