@@ -21,11 +21,5 @@ License: MIT
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-Depends: 
-    R (>= 3.5.0),
-    sangerseqR,
-    Biostrings,
-    RcppRoll
-Imports:
-    BiocManager
+Depends: R (>= 3.5.0), sangerseqR, RcppRoll
 RoxygenNote: 7.3.2

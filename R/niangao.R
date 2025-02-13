@@ -27,9 +27,7 @@
 #'
 #' Files without valid sequences after cleaning are excluded from the `DNAStringSet` object.
 #'
-#' @import BiocManager
 #' @import sangerseqR
-#' @import Biostrings
 #' @import RcppRoll
 #'
 #' @export

@@ -2,7 +2,6 @@
 
 export(niangao)
 import(BiocManager)
-import(Biostrings)
 import(RcppRoll)
 import(sangerseqR)
 importFrom(utils,install.packages)
